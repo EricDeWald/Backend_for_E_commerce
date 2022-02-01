@@ -16,6 +16,11 @@ Category.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    references: {
+      model: 'Category',
+      key: 'id'
+    }
+
   },
   {
     sequelize,
