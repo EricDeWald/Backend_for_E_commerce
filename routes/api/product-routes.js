@@ -4,9 +4,10 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
-  // find all products
+ // find all products
   // be sure to include its associated Category and Tag data
+router.get('/', async (req, res) => {
+ 
   try {
     const productData = await Product.findAll({
       include: [{ model: Category },{ model: Tag }],
@@ -19,10 +20,9 @@ router.get('/', (req, res) => {
 });
 
 // get one product
-router.get('/:id', (req, res) => {
-  // find a single product by its `id`
+// find a single product by its `id`
   // be sure to include its associated Category and Tag data
-
+router.get('/:id', async (req, res) => {
   
   try {
     const productData = await Product.findByPk(req.params.id, {
@@ -42,6 +42,8 @@ router.get('/:id', (req, res) => {
 });
 
 // create new product
+ // if there's product tags, we need to create pairings to bulk create in the ProductTag model
+ // if no product tags, just respond
 router.post('/', (req, res) => {
   /* req.body should look like this...
     {
@@ -53,7 +55,7 @@ router.post('/', (req, res) => {
   */
   Product.create(req.body)
     .then((product) => {
-      // if there's product tags, we need to create pairings to bulk create in the ProductTag model
+     
       if (req.body.tagIds.length) {
         const productTagIdArr = req.body.tagIds.map((tag_id) => {
           return {
@@ -63,7 +65,7 @@ router.post('/', (req, res) => {
         });
         return ProductTag.bulkCreate(productTagIdArr);
       }
-      // if no product tags, just respond
+      
       res.status(200).json(product);
     })
     .then((productTagIds) => res.status(200).json(productTagIds))
@@ -74,8 +76,9 @@ router.post('/', (req, res) => {
 });
 
 // update product
+
 router.put('/:id', (req, res) => {
-  // update product data
+ 
   Product.update(req.body, {
     where: {
       id: req.params.id,
@@ -115,7 +118,7 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+// router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
   router.delete('/:id', async (req, res) => {
     try {
