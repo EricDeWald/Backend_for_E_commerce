@@ -35,28 +35,15 @@ router.get('/', async(req, res) => {
 
 router.post('/', (req, res) => {
   // create a new category
-  Category.create(req.body)
-    .then((category) => {
-     
-      if (req.body.tagIds.length) {
-        const categoryTagIdArr = req.body.tagIds.map((tag_id) => {
-          return {
-            category_id: category.id,
-            tag_id,
-          };
-        });
-        return categoryTag.bulkCreate(categoryTagIdArr);
-      }
-      
-      res.status(200).json(category);
-    })
-    .then((categoryTagIds) => res.status(200).json(categoryTagIds))
+  Category.create({
+    category_name: req.body.category_name
+  })
+  .then((createdCategory) => res.status(200).json(createdCategory))
     .catch((err) => {
       console.log(err);
       res.status(400).json(err);
     });
 });
-
   // update a category by its `id` value
 router.put('/:id', (req, res) => {
 

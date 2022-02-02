@@ -40,7 +40,7 @@ router.post('/', (req, res) => {
   Tag.create({
     tag_name: req.body.tag_name
   })
-  .then((tagNameIds) => res.status(200).json(tagNameIds))
+  .then((createdTag) => res.status(200).json(createdTag))
     .catch((err) => {
       console.log(err);
       res.status(400).json(err);
