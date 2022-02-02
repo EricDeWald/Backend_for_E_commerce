@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   try {
@@ -25,7 +25,7 @@ router.get('/:id', (req, res) => {
     });
 
     if (!tagData) {
-      res.status(404).json({ message: 'No product data found with that id!' });
+      res.status(404).json({ message: 'No tag data found with that id!' });
       return;
     }
 
@@ -37,6 +37,14 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   // create a new tag
+  Tag.create({
+    tag_name: req.body.tag_name
+  })
+  .then((tagNameIds) => res.status(200).json(tagNameIds))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 });
 
 router.put('/:id', (req, res) => {
