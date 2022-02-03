@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Category, Product } = require('../../models');
+const { Category, Product, Tag } = require('../../models');
 
 // The `/api/categories` endpoint
 // find all categories
@@ -8,7 +8,7 @@ const { Category, Product } = require('../../models');
 router.get('/', async(req, res) => {
   try {
     const categoryData = await Category.findAll({
-      include: [{ model: Product },{ model: Tag }],
+      include: [{ model: Product }]
     });
     res.status(200).json(categoryData);
     } catch (err) {
@@ -21,7 +21,7 @@ router.get('/', async(req, res) => {
   router.get('/:id', async (req, res) => {
     try {
       const categoryData = await Category.findByPk(req.params.id, {
-        include: [{ model: Products }],
+        include: [{ model:Product }],
       });
       if (!categoryData) {
         res.status(404).json({ message: 'No category data found with that id!' });
@@ -54,34 +54,10 @@ router.put('/:id', (req, res) => {
   })
     .then((category) => {
       // find all associated tags from CatagoryTag
-      return CatagoryTag.findAll({ where: { category_id: req.params.id } });
+    res.status(200).json(category)
     })
-    .then((categoryTags) => {
-      // get list of current tag_ids
-      const categoryTagIds = categoryTags.map(({ tag_id }) => tag_id);
-      // create filtered list of new tag_ids
-      const newCatagoryTags = req.body.tagIds
-        .filter((tag_id) => !categoryTagIds.includes(tag_id))
-        .map((tag_id) => {
-          return {
-            category_id: req.params.id,
-            tag_id,
-          };
-        });
-      // figure out which ones to remove
-      const categoryTagsToRemove = categoryTags
-        .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
-        .map(({ id }) => id);
-
-      // run both actions
-      return Promise.all([
-        CatagoryTag.destroy({ where: { id: categoryTagsToRemove } }),
-        CatagoryTag.bulkCreate(newCatagoryTags),
-      ]);
-    })
-    .then((updatedCatagoryTags) => res.json(updatedCatagoryTags))
     .catch((err) => {
-      // console.log(err);
+      console.log(err);
       res.status(400).json(err);
     });
 });
